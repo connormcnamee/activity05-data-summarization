@@ -1,6 +1,6 @@
 ---
 title: "Activity 5"
-author: "Name"
+author: "Connor McNamee"
 output: github_document
 ---
 
@@ -25,7 +25,7 @@ We read in the same data from Activity 4 below, but notice that this code is now
 Compare this code output to the `load_data` chunk in your knitted Activity 4 `.md` report.
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
-**Response**:
+**Response**: It causes the whole data set to print so we can see it.
 
 
 ### Data Codebook
@@ -80,6 +80,10 @@ Below, create a code chunk and name it `median_earnings`.
 Make sure there is an empty line above and below the code chunk.
 
 
+```{r median_earnings}
+college_recent_grads %>%
+  summarise(median_all_majors = median(median))
+```
 
 In your newly created R code chunk, verify that the median income for all majors was $36,000.
 Using the `college_recent_grads` dataset and functions from `{dplyr}`, verify the *median* summary statistic for the variable median earnings of full-time, year-round workers (`median`).
@@ -95,12 +99,16 @@ Be careful when you name your output summaries as we are dealing with things tha
 When I and obtaining numerical summaries for variables, I like to include the variable name in my summary name (e.g., `mean_med_earnings = mean(median)`).
 Create a code chunk and name it `summary_earnings`.
 
+```{r summary_earnings}
+ college_recent_grads %>%
+  summarise(median_by_major = median(median), sd_by_major = sd(median), mean_by_major = mean(median), n_of_majors = n(), min_med_earnings = min(median), max_med_earnings = max(median))
+```
 
 
 Provide a discussion on what you believe the distribution of median earnings will look like.
 You should discuss the center, spread, and potential shape only using these values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**: I believe that this might be a normal distribution, with center around 36000, maybe some slight skewness
 
 
 ### Median Earnings by Major Category
@@ -110,12 +118,18 @@ Using the `college_recent_grads` dataset and functions from `{dplyr}`, obtain si
 *Arrange* this summary table by the median earning.
 Create a code chunk and name it `major_earnings`.
 
+```{r major_earnings}
+ college_recent_grads %>%
+  group_by(major_category) %>%
+  summarise(median_by_major = median(median), sd_by_major = sd(median), mean_by_major = mean(median), n_of_majors = n(), min_med_earnings = min(median), max_med_earnings = max(median)) %>%
+  knitr::kable()
+```
 
 
 Provide a discussion on how each major compares to the overall distribution.
 You should discuss the center, spread, and potential shape only using these summary values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**: They all seem to be pretty close in median earnings, engineering is quite a bit higher than the rest, but most of them are within 10000 of the overall median.
 
 
 Before we continue, add the following to the end of your pipeline (you will need to pipe first) in your `major_earnings` code chunk:
@@ -128,7 +142,7 @@ Knit your document with and without this last piped code.
 What changes about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**:
+**Response**: When trying to better express the data, make it "publication ready"
 
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
@@ -139,11 +153,19 @@ Let us see how well your descriptions in the [Median Earnings by Major Category]
 Plot the distribution of the variable `median` earnings of full-time, year-round workers for each `major_category` using the *boxplot* and *jitter* geometries.
 Create a code chunk and name it `major_boxplot`.
 
+```{r major_boxplot}
+college_recent_grads %>% 
+  # boxplot and jitter of median earnings
+  ggplot(mapping = aes(x = median, y = major_category)) +
+    geom_boxplot() +
+    geom_jitter()
+  
+```
 
 
 Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
 
-**Response**:
+**Response**: They are in fact all pretty close as far as median goes, some have very different spreads compared to others, like interdisciplinary only containing one major.
 
 
 ### Multiple Rankings
@@ -160,6 +182,12 @@ In this code chunk,
 3. Assign/create a *rank* for each summarized value (rank for `total`, rank for `sharewomen`, etc.) and provide a meaningful name to each ranked column value.
 4. Arrange the results so that `major_category` appear in alphabetical order ("A" at the top).
 
+```{r category_rankings}
+college_recent_grads %>% 
+  group_by(major_category) %>% 
+  summarise(sum_total = n(), median_sharewomen = median(sharewomen), median_unemp = median(unemployment_rate), median_median = median(median))
+
+```
 
 
 Provide a discussion on how the `major_category` rankings compare.
